@@ -102,6 +102,9 @@ function renderResults(): void {
         ${detailRow('邮编', profile.postcode)}
         ${detailRow('国家', profile.country)}
         ${detailRow('完整地址', profile.address, true)}
+        ${detailRow('姓名', profile.name)}
+        ${detailRow('电话', profile.phone)}
+        ${detailRow('邮箱', profile.email)}
       </div>
     </article>
   `).join('');
