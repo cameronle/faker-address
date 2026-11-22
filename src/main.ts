@@ -160,7 +160,7 @@ function renderResults(): void {
         ${detailRow('城市', profile.city)}
         ${detailRow('州 / 省 / 地区', profile.state)}
         ${detailRow('邮编', profile.postcode)}
-        ${detailRow('国家', profile.country)}
+        ${detailRow('国家', fullAddressCountry)}
         <div class="detail-section-label contact-label">联系方式</div>
         ${detailRow('电话', profile.phone)}
         ${detailRow('完整地址', fullAddress, true)}
