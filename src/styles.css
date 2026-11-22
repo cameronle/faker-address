@@ -12,6 +12,7 @@ body { margin: 0; min-width: 320px; background: #0d1020; }
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: wait; opacity: .6; }
+[hidden] { display: none !important; }
 
 .app-shell { width: min(980px, calc(100% - 36px)); min-height: 100vh; margin: 0 auto; padding: 72px 0 50px; }
 .page-header { margin-bottom: 32px; }
@@ -25,6 +26,7 @@ button:disabled { cursor: wait; opacity: .6; }
 .field input:focus, .field select:focus { border-color: #9da6ff; box-shadow: 0 0 0 3px #8993ff22; }
 .generate-button { height: 45px; border: 0; border-radius: 10px; color: #11152a; background: #b8bdff; font-weight: 800; }
 .generate-button:hover { background: #d0d3ff; }
+.us-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; padding: 14px 18px; border: 1px solid #252b46; border-radius: 14px; background: #14182a; }
 
 .results-section { margin-top: 42px; }
 .results-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
@@ -52,7 +54,7 @@ button:disabled { cursor: wait; opacity: .6; }
   body { background: #f6f7fb; }
   .page-header h1 { color: #1b2036; }
   .page-header p, .field span, .results-title span, .detail-row > span, .notice { color: #737b98; }
-  .controls, .result-card { border-color: #dfe3ee; background: #fff; }
+  .controls, .us-filters, .result-card { border-color: #dfe3ee; background: #fff; }
   .field input, .field select { border-color: #d7dce9; background: #fbfcff; color: #242943; }
   .detail-table { border-color: #e6e8f0; }
   .detail-row { border-color: #edf0f5; }
@@ -70,7 +72,8 @@ button:disabled { cursor: wait; opacity: .6; }
 
 @media (max-width: 460px) {
   .app-shell { width: calc(100% - 20px); padding-top: 30px; }
-  .controls { grid-template-columns: 1fr; padding: 14px; }
+  .controls, .us-filters { grid-template-columns: 1fr; }
+  .controls { padding: 14px; }
   .count-field, .generate-button { grid-column: auto; }
   .generate-button { width: 100%; }
   .detail-row { grid-template-columns: 92px minmax(0, 1fr); min-height: 42px; }

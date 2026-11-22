@@ -5,6 +5,12 @@ import {
 } from './localeCatalog';
 import { generateProfiles } from './generator';
 import { clampCount, copyText, escapeHtml } from './utils';
+import {
+  ALL_US_LOCATIONS,
+  usCitiesForState,
+  usStateOptions,
+  type UsLocationFilter,
+} from './usLocations';
 import type { GeneratedProfile } from './types';
 import './styles.css';
 
@@ -21,6 +27,8 @@ themeMedia.addEventListener('change', syncThemeColor);
 
 let selectedCountry = countryOptions.find((item) => item.key === 'JP')?.key ?? countryOptions[0]?.key ?? 'US';
 let selectedLanguage = languageOptionsForCountry(selectedCountry)[0]?.code ?? 'en';
+let selectedUsState = ALL_US_LOCATIONS;
+let selectedUsCity = ALL_US_LOCATIONS;
 let count = 1;
 let results: GeneratedProfile[] = [];
 
@@ -47,6 +55,17 @@ app.innerHTML = `
       <button class="generate-button" id="generateButton" type="button">生成</button>
     </section>
 
+    <section class="us-filters" id="usFilters" aria-label="美国州和城市筛选" hidden>
+      <label class="field">
+        <span>美国州</span>
+        <select id="usStateSelect" aria-label="选择美国州"></select>
+      </label>
+      <label class="field">
+        <span>城市</span>
+        <select id="usCitySelect" aria-label="选择美国城市"></select>
+      </label>
+    </section>
+
     <section class="results-section" aria-live="polite">
       <div class="results-title"><h2>结果</h2><span id="resultCount"></span></div>
       <div id="results" class="results-grid empty-state">选择条件后点击生成</div>
@@ -62,6 +81,9 @@ const countInput = document.querySelector<HTMLInputElement>('#countInput')!;
 const generateButton = document.querySelector<HTMLButtonElement>('#generateButton')!;
 const resultCount = document.querySelector<HTMLSpanElement>('#resultCount')!;
 const resultsContainer = document.querySelector<HTMLDivElement>('#results')!;
+const usFilters = document.querySelector<HTMLElement>('#usFilters')!;
+const usStateSelect = document.querySelector<HTMLSelectElement>('#usStateSelect')!;
+const usCitySelect = document.querySelector<HTMLSelectElement>('#usCitySelect')!;
 
 function renderCountries(): void {
   countrySelect.innerHTML = countryOptions
@@ -77,6 +99,29 @@ function renderLanguages(): void {
     .map((item) => `<option value="${escapeHtml(item.code)}">${escapeHtml(item.label)}</option>`)
     .join('');
   languageSelect.value = selectedLanguage;
+}
+
+function renderUsCities(): void {
+  const cities = selectedUsState === ALL_US_LOCATIONS ? [] : usCitiesForState(selectedUsState);
+  usCitySelect.innerHTML = [
+    `<option value="${ALL_US_LOCATIONS}">全部城市</option>`,
+    ...cities.map((location) => `<option value="${escapeHtml(location.city)}">${escapeHtml(location.city)}</option>`),
+  ].join('');
+  if (!cities.some((location) => location.city === selectedUsCity)) selectedUsCity = ALL_US_LOCATIONS;
+  usCitySelect.value = selectedUsCity;
+  usCitySelect.disabled = selectedUsState === ALL_US_LOCATIONS;
+}
+
+function renderUsFilters(): void {
+  const visible = selectedCountry === 'US';
+  usFilters.hidden = !visible;
+  if (!visible) return;
+  usStateSelect.innerHTML = [
+    `<option value="${ALL_US_LOCATIONS}">全部州</option>`,
+    ...usStateOptions.map((state) => `<option value="${escapeHtml(state.value)}">${escapeHtml(state.label)}</option>`),
+  ].join('');
+  usStateSelect.value = selectedUsState;
+  renderUsCities();
 }
 
 function detailRow(label: string, value: string, full = false): string {
@@ -121,6 +166,17 @@ function setBusy(busy: boolean): void {
 countrySelect.addEventListener('change', () => {
   selectedCountry = countrySelect.value;
   renderLanguages();
+  renderUsFilters();
+});
+
+usStateSelect.addEventListener('change', () => {
+  selectedUsState = usStateSelect.value;
+  selectedUsCity = ALL_US_LOCATIONS;
+  renderUsCities();
+});
+
+usCitySelect.addEventListener('change', () => {
+  selectedUsCity = usCitySelect.value;
 });
 
 languageSelect.addEventListener('change', () => {
@@ -134,9 +190,12 @@ countInput.addEventListener('change', () => {
 
 generateButton.addEventListener('click', async () => {
   const locale = localeForSelection(selectedCountry, selectedLanguage);
+  const usFilter: UsLocationFilter | undefined = selectedCountry === 'US' && selectedUsState !== ALL_US_LOCATIONS
+    ? { stateCode: selectedUsState, city: selectedUsCity }
+    : undefined;
   setBusy(true);
   try {
-    results = await generateProfiles(locale, count);
+    results = await generateProfiles(locale, count, usFilter);
     renderResults();
   } catch (error) {
     resultCount.textContent = '';
@@ -163,4 +222,5 @@ resultsContainer.addEventListener('click', async (event) => {
 
 renderCountries();
 renderLanguages();
+renderUsFilters();
 renderResults();

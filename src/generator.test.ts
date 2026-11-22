@@ -13,6 +13,13 @@ describe('Faker locale generation', () => {
     expect(profile.country).toBe('日本');
   });
 
+  it('uses the selected US state and city filter', async () => {
+    const [profile] = await generateProfiles('en_US', 1, { stateCode: 'OR', city: 'Portland' });
+    expect(profile.state).toBe('Oregon');
+    expect(profile.city).toBe('Portland');
+    expect(profile.postcode).toBe('97201');
+  });
+
   it.each(availableLocaleCodes)('loads and generates locale %s', async (code) => {
     const [profile] = await generateProfiles(code, 1);
     expect(profile.locale).toBe(code);

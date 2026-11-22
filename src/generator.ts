@@ -1,6 +1,7 @@
 import type { Faker } from '@faker-js/faker';
 import { countryLabel, localeLabel } from './localeCatalog';
 import { localeLoaders } from './generated/locale-loaders';
+import { pickUsLocation, type UsLocationFilter } from './usLocations';
 import type { GeneratedProfile } from './types';
 
 const cache = new Map<string, Faker>();
@@ -41,17 +42,18 @@ function safe<T>(
   return fallback();
 }
 
-export async function generateProfiles(code: string, count: number): Promise<GeneratedProfile[]> {
+export async function generateProfiles(code: string, count: number, usFilter?: UsLocationFilter): Promise<GeneratedProfile[]> {
   const selected = await loadFaker(code);
   const fallback = await loadFallbackFaker();
   return Array.from({ length: Math.max(1, Math.min(50, count)) }, () => {
     const fallbackFields: string[] = [];
+    const usLocation = code === 'en_US' && usFilter ? pickUsLocation(usFilter) : undefined;
     const firstName = safe('firstName', () => selected.person.firstName(), () => fallback.person.firstName(), fallbackFields);
     const lastName = safe('lastName', () => selected.person.lastName(), () => fallback.person.lastName(), fallbackFields);
     const street = safe('street', () => selected.location.streetAddress(), () => fallback.location.streetAddress(), fallbackFields);
-    const city = safe('city', () => selected.location.city(), () => fallback.location.city(), fallbackFields);
-    const state = safe('state', () => selected.location.state(), () => fallback.location.state(), fallbackFields);
-    const postcode = safe('postcode', () => selected.location.zipCode(), () => fallback.location.zipCode(), fallbackFields);
+    const city = usLocation?.city ?? safe('city', () => selected.location.city(), () => fallback.location.city(), fallbackFields);
+    const state = usLocation?.state ?? safe('state', () => selected.location.state(), () => fallback.location.state(), fallbackFields);
+    const postcode = usLocation?.postcode ?? safe('postcode', () => selected.location.zipCode(), () => fallback.location.zipCode(), fallbackFields);
     const phone = safe('phone', () => selected.phone.number(), () => fallback.phone.number(), fallbackFields);
     const company = safe('company', () => selected.company.name(), () => fallback.company.name(), fallbackFields);
     const email = safe(
