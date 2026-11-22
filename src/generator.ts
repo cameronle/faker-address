@@ -1,5 +1,5 @@
 import type { Faker } from '@faker-js/faker';
-import { localeLabel } from './localeCatalog';
+import { countryLabel, localeLabel } from './localeCatalog';
 import { localeLoaders } from './generated/locale-loaders';
 import type { GeneratedProfile } from './types';
 
@@ -61,7 +61,8 @@ export async function generateProfiles(code: string, count: number): Promise<Gen
       fallbackFields,
     );
     const name = `${firstName} ${lastName}`.trim();
-    const address = [street, city, state, postcode].filter(Boolean).join(', ');
+    const country = countryLabel(code);
+    const address = [street, city, state, postcode, country].filter(Boolean).join(', ');
 
     return {
       locale: code,
@@ -75,7 +76,7 @@ export async function generateProfiles(code: string, count: number): Promise<Gen
       phone,
       email,
       company,
-      country: localeLabel(code),
+      country,
       fallbackFields: [...new Set(fallbackFields)],
       generatedAt: new Date().toISOString(),
     };

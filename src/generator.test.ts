@@ -10,6 +10,7 @@ describe('Faker locale generation', () => {
     expect(profile.address).toBeTruthy();
     expect(profile.postcode).toBeTruthy();
     expect(profile.email).toContain('@');
+    expect(profile.country).toBe('日本');
   });
 
   it.each(availableLocaleCodes)('loads and generates locale %s', async (code) => {

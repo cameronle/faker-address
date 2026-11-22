@@ -2,10 +2,9 @@ import {
   countryOptions,
   languageOptionsForCountry,
   localeForSelection,
-  localeLabel,
 } from './localeCatalog';
 import { generateProfiles } from './generator';
-import { clampCount, copyText, escapeHtml } from './utils';
+import { clampCount, escapeHtml } from './utils';
 import type { GeneratedProfile } from './types';
 import './styles.css';
 
@@ -80,8 +79,8 @@ function renderLanguages(): void {
   languageSelect.value = selectedLanguage;
 }
 
-function field(label: string, value: string): string {
-  return `<div class="data-field"><span>${escapeHtml(label)}</span><div><strong>${escapeHtml(value || '—')}</strong><button class="copy-field" type="button" data-copy="${escapeHtml(value)}" aria-label="复制${escapeHtml(label)}">复制</button></div></div>`;
+function detailRow(label: string, value: string, full = false): string {
+  return `<div class="detail-row${full ? ' full-address' : ''}"><span>${escapeHtml(label)}</span><div><strong>${escapeHtml(value || '—')}</strong></div></div>`;
 }
 
 function renderResults(): void {
@@ -94,14 +93,15 @@ function renderResults(): void {
   resultsContainer.className = 'results-grid';
   resultsContainer.innerHTML = results.map((profile, index) => `
     <article class="result-card">
-      <div class="card-top"><span>${String(index + 1).padStart(2, '0')}</span><span>${escapeHtml(profile.localeLabel)}</span></div>
-      <div class="data-fields">
-        ${field('姓名', profile.name)}
-        ${field('地址', profile.address)}
-        ${field('城市 / 州省', [profile.city, profile.state].filter(Boolean).join(' · '))}
-        ${field('邮编', profile.postcode)}
-        ${field('电话', profile.phone)}
-        ${field('邮箱', profile.email)}
+      <div class="card-top"><span>${String(index + 1).padStart(2, '0')}</span><span>${escapeHtml(profile.country)}</span></div>
+      <h3>地址详情</h3>
+      <div class="detail-table">
+        ${detailRow('街道', profile.street)}
+        ${detailRow('城市', profile.city)}
+        ${detailRow('州 / 省 / 地区', profile.state)}
+        ${detailRow('邮编', profile.postcode)}
+        ${detailRow('国家', profile.country)}
+        ${detailRow('完整地址', profile.address, true)}
       </div>
     </article>
   `).join('');
@@ -139,14 +139,6 @@ generateButton.addEventListener('click', async () => {
   } finally {
     setBusy(false);
   }
-});
-
-resultsContainer.addEventListener('click', async (event) => {
-  const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-copy]');
-  if (!button) return;
-  const copied = await copyText(button.dataset.copy ?? '');
-  button.textContent = copied ? '已复制' : '失败';
-  window.setTimeout(() => { button.textContent = '复制'; }, 1200);
 });
 
 renderCountries();

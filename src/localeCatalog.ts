@@ -108,6 +108,10 @@ export function localeForSelection(countryKey: string, languageCode: string): st
   return match?.code ?? localeOptions.find((item) => item.countryKey === countryKey)?.code ?? countryKey;
 }
 
+export function countryLabel(code: string): string {
+  return localeOptions.find((item) => item.code === code)?.countryLabel ?? code;
+}
+
 export function localeLabel(code: string): string {
   return localeOptions.find((item) => item.code === code)?.label ?? code;
 }
