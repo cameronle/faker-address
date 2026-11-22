@@ -12,6 +12,14 @@ import './styles.css';
 const app = document.querySelector<HTMLDivElement>('#app');
 if (!app) throw new Error('Missing #app root');
 
+const themeMedia = window.matchMedia('(prefers-color-scheme: light)');
+const themeMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+const syncThemeColor = (event?: MediaQueryListEvent): void => {
+  if (themeMeta) themeMeta.content = (event?.matches ?? themeMedia.matches) ? '#f6f7fb' : '#0d1020';
+};
+syncThemeColor();
+themeMedia.addEventListener('change', syncThemeColor);
+
 let selectedCountry = countryOptions.find((item) => item.key === 'JP')?.key ?? countryOptions[0]?.key ?? 'US';
 let selectedLanguage = languageOptionsForCountry(selectedCountry)[0]?.code ?? 'en';
 let count = 1;
