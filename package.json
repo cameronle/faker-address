@@ -1,0 +1,27 @@
+{
+  "name": "faker-address",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "generate:locales": "node scripts/generate-locale-registry.mjs",
+    "dev": "pnpm generate:locales && vite",
+    "build": "pnpm generate:locales && tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "pnpm generate:locales && vitest run",
+    "check": "pnpm generate:locales && tsc --noEmit"
+  },
+  "dependencies": {
+    "@faker-js/faker": "10.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "jsdom": "^26.0.0",
+    "typescript": "^5.8.0",
+    "vite": "^6.2.0",
+    "vitest": "^3.0.0"
+  }
+}
