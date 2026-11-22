@@ -42,6 +42,8 @@ button:disabled { cursor: wait; opacity: .6; }
 .detail-row > span { color: #858eae; font-size: 11px; }
 .detail-row > div { min-width: 0; }
 .detail-row strong { display: block; color: #f0f1f8; font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.detail-row[data-copy-row] { cursor: copy; }
+.copy-field { padding: 3px 0 3px 8px; border: 0; background: transparent; color: #aeb6ff; font-size: 14px; line-height: 1; }
 .detail-row.full-address { grid-template-columns: 112px minmax(0, 1fr); padding-top: 4px; padding-bottom: 4px; }
 .notice { margin: 23px 0 0; color: #6f7898; font-size: 11px; line-height: 1.6; text-align: center; }
 

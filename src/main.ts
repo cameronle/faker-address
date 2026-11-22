@@ -4,7 +4,7 @@ import {
   localeForSelection,
 } from './localeCatalog';
 import { generateProfiles } from './generator';
-import { clampCount, escapeHtml } from './utils';
+import { clampCount, copyText, escapeHtml } from './utils';
 import type { GeneratedProfile } from './types';
 import './styles.css';
 
@@ -80,7 +80,7 @@ function renderLanguages(): void {
 }
 
 function detailRow(label: string, value: string, full = false): string {
-  return `<div class="detail-row${full ? ' full-address' : ''}"><span>${escapeHtml(label)}</span><div><strong>${escapeHtml(value || '—')}</strong></div></div>`;
+  return `<div class="detail-row${full ? ' full-address' : ''}" data-copy-row="${escapeHtml(value)}"><span>${escapeHtml(label)}</span><div><strong>${escapeHtml(value || '—')}</strong><button class="copy-field" type="button" data-copy="${escapeHtml(value)}" aria-label="复制${escapeHtml(label)}">⧉</button></div></div>`;
 }
 
 function renderResults(): void {
@@ -101,10 +101,8 @@ function renderResults(): void {
         ${detailRow('州 / 省 / 地区', profile.state)}
         ${detailRow('邮编', profile.postcode)}
         ${detailRow('国家', profile.country)}
-        ${detailRow('完整地址', profile.address, true)}
-        ${detailRow('姓名', profile.name)}
         ${detailRow('电话', profile.phone)}
-        ${detailRow('邮箱', profile.email)}
+        ${detailRow('完整地址', profile.address, true)}
       </div>
     </article>
   `).join('');
@@ -141,6 +139,19 @@ generateButton.addEventListener('click', async () => {
     resultsContainer.textContent = `生成失败：${error instanceof Error ? error.message : String(error)}`;
   } finally {
     setBusy(false);
+  }
+});
+
+resultsContainer.addEventListener('click', async (event) => {
+  const target = event.target as HTMLElement;
+  const button = target.closest<HTMLButtonElement>('[data-copy]');
+  const row = target.closest<HTMLElement>('[data-copy-row]');
+  const value = button?.dataset.copy ?? row?.dataset.copyRow;
+  if (value === undefined) return;
+  const copied = await copyText(value);
+  if (button) {
+    button.textContent = copied ? '✓' : '×';
+    window.setTimeout(() => { button.textContent = '⧉'; }, 1200);
   }
 });
 
