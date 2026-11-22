@@ -137,7 +137,8 @@ function renderResults(): void {
   }
   resultsContainer.className = 'results-grid';
   resultsContainer.innerHTML = results.map((profile, index) => {
-    const fullAddress = [profile.street, profile.city, profile.state, profile.postcode, profile.country]
+    const fullAddressCountry = profile.country === '美国' ? 'US' : profile.country;
+    const fullAddress = [profile.street, profile.city, profile.state, profile.postcode, fullAddressCountry]
       .filter(Boolean)
       .join('，');
     return `
