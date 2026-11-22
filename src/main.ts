@@ -149,9 +149,10 @@ resultsContainer.addEventListener('click', async (event) => {
   const value = button?.dataset.copy ?? row?.dataset.copyRow;
   if (value === undefined) return;
   const copied = await copyText(value);
-  if (button) {
-    button.textContent = copied ? '✓' : '×';
-    window.setTimeout(() => { button.textContent = '⧉'; }, 1200);
+  const feedbackButton = button ?? row?.querySelector<HTMLButtonElement>('.copy-field');
+  if (feedbackButton) {
+    feedbackButton.textContent = copied ? '✓' : '×';
+    window.setTimeout(() => { feedbackButton.textContent = '⧉'; }, 1200);
   }
 });
 
