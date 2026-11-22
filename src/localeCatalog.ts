@@ -88,7 +88,9 @@ export const localeOptions: LocaleOption[] = availableLocaleCodes.map((code) => 
 }));
 
 export const countryOptions: CountryOption[] = [...new Map(
-  localeOptions.map((item) => [item.countryKey, { key: item.countryKey, label: item.countryLabel }]),
+  localeOptions
+    .filter((item) => item.countryKey !== 'OTHER')
+    .map((item) => [item.countryKey, { key: item.countryKey, label: item.countryLabel }]),
 ).values()].sort((a, b) => a.label.localeCompare(b.label, 'zh-CN'));
 
 export function languageOptionsForCountry(countryKey: string): LanguageOption[] {

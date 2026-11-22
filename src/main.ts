@@ -25,7 +25,7 @@ const syncThemeColor = (event?: MediaQueryListEvent): void => {
 syncThemeColor();
 themeMedia.addEventListener('change', syncThemeColor);
 
-let selectedCountry = countryOptions.find((item) => item.key === 'JP')?.key ?? countryOptions[0]?.key ?? 'US';
+let selectedCountry = countryOptions.find((item) => item.key === 'US')?.key ?? countryOptions[0]?.key ?? 'US';
 let selectedLanguage = languageOptionsForCountry(selectedCountry)[0]?.code ?? 'en';
 let selectedUsState = ALL_US_LOCATIONS;
 let selectedUsCity = ALL_US_LOCATIONS;
@@ -35,43 +35,52 @@ let results: GeneratedProfile[] = [];
 app.innerHTML = `
   <main class="app-shell">
     <header class="page-header">
-      <h1>地址生成器</h1>
-      <p>选择国家、语言和数量，生成测试资料。</p>
+      <div>
+        <p class="eyebrow">开发测试工具</p>
+        <h1>测试地址生成器</h1>
+      </div>
+      <p class="page-description">选择条件，生成可复制的合成地址资料。</p>
     </header>
 
-    <section class="controls" aria-label="生成设置">
-      <label class="field">
-        <span>国家 / 地区</span>
-        <select id="countrySelect" aria-label="选择国家或地区"></select>
-      </label>
-      <label class="field">
-        <span>语言</span>
-        <select id="languageSelect" aria-label="选择语言"></select>
-      </label>
-      <label class="field count-field">
-        <span>数量</span>
-        <input id="countInput" type="number" min="1" max="50" value="1" inputmode="numeric" />
-      </label>
-      <button class="generate-button" id="generateButton" type="button">生成</button>
-    </section>
+    <section class="settings-card" aria-label="生成设置">
+      <div class="settings-heading">
+        <h2>生成条件</h2>
+        <span>默认美国 / 英语</span>
+      </div>
+      <div class="controls">
+        <label class="field">
+          <span>国家 / 地区</span>
+          <select id="countrySelect" aria-label="选择国家或地区"></select>
+        </label>
+        <label class="field">
+          <span>语言</span>
+          <select id="languageSelect" aria-label="选择语言"></select>
+        </label>
+        <label class="field count-field">
+          <span>数量</span>
+          <input id="countInput" type="number" min="1" max="50" value="1" inputmode="numeric" />
+        </label>
+        <button class="generate-button" id="generateButton" type="button">生成</button>
+      </div>
 
-    <section class="us-filters" id="usFilters" aria-label="美国州和城市筛选" hidden>
-      <label class="field">
-        <span>美国州</span>
-        <select id="usStateSelect" aria-label="选择美国州"></select>
-      </label>
-      <label class="field">
-        <span>城市</span>
-        <select id="usCitySelect" aria-label="选择美国城市"></select>
-      </label>
+      <div class="us-filters" id="usFilters" aria-label="美国州和城市筛选" hidden>
+        <label class="field">
+          <span>美国州</span>
+          <select id="usStateSelect" aria-label="选择美国州"></select>
+        </label>
+        <label class="field">
+          <span>城市</span>
+          <select id="usCitySelect" aria-label="选择美国城市"></select>
+        </label>
+      </div>
     </section>
 
     <section class="results-section" aria-live="polite">
-      <div class="results-title"><h2>结果</h2><span id="resultCount"></span></div>
+      <div class="results-title"><h2>生成结果</h2><span id="resultCount"></span></div>
       <div id="results" class="results-grid empty-state">选择条件后点击生成</div>
     </section>
 
-    <p class="notice">仅供开发测试，不保证是真实地址，不用于付款、账单、实名或邮寄。</p>
+    <p class="notice">合成测试数据，不保证真实存在；不要用于付款、账单、实名或邮寄。</p>
   </main>
 `;
 
@@ -146,11 +155,13 @@ function renderResults(): void {
       <div class="card-top"><span>${String(index + 1).padStart(2, '0')}</span><span>${escapeHtml(profile.country)}</span></div>
       <h3>地址详情</h3>
       <div class="detail-table">
+        <div class="detail-section-label">地址信息</div>
         ${detailRow('街道', profile.street)}
         ${detailRow('城市', profile.city)}
         ${detailRow('州 / 省 / 地区', profile.state)}
         ${detailRow('邮编', profile.postcode)}
         ${detailRow('国家', profile.country)}
+        <div class="detail-section-label contact-label">联系方式</div>
         ${detailRow('电话', profile.phone)}
         ${detailRow('完整地址', fullAddress, true)}
       </div>
