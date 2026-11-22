@@ -91,7 +91,11 @@ function renderResults(): void {
     return;
   }
   resultsContainer.className = 'results-grid';
-  resultsContainer.innerHTML = results.map((profile, index) => `
+  resultsContainer.innerHTML = results.map((profile, index) => {
+    const fullAddress = [profile.street, profile.city, profile.state, profile.postcode, profile.country]
+      .filter(Boolean)
+      .join('，');
+    return `
     <article class="result-card">
       <div class="card-top"><span>${String(index + 1).padStart(2, '0')}</span><span>${escapeHtml(profile.country)}</span></div>
       <h3>地址详情</h3>
@@ -102,10 +106,11 @@ function renderResults(): void {
         ${detailRow('邮编', profile.postcode)}
         ${detailRow('国家', profile.country)}
         ${detailRow('电话', profile.phone)}
-        ${detailRow('完整地址', profile.address, true)}
+        ${detailRow('完整地址', fullAddress, true)}
       </div>
     </article>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function setBusy(busy: boolean): void {
